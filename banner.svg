@@ -1,0 +1,35 @@
+<svg width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo oscuro -->
+  <rect width="1500" height="500" fill="#0F172A"/>
+  
+  <!-- Degradado sutil de fondo -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0EA5E9" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.02"/>
+    </linearGradient>
+  </defs>
+  <rect width="1500" height="500" fill="url(#bg)"/>
+  
+  <!-- Texto principal -->
+  <text x="120" y="220" font-family="Poppins, sans-serif" font-weight="600" font-size="64" fill="#E2E8F0">
+    AutoLab
+  </text>
+  
+  <!-- Lema -->
+  <text x="120" y="290" font-family="Inter, sans-serif" font-weight="400" font-size="28" fill="#94A3B8">
+    Sin ruido, solo valor
+  </text>
+  
+  <!-- Dominio -->
+  <text x="120" y="340" font-family="Inter, sans-serif" font-weight="500" font-size="24" fill="#38BDF8">
+    autolab-web.vercel.app
+  </text>
+  
+  <!-- Icono técnico sutil (opcional) -->
+  <g transform="translate(1300, 380)">
+    <circle cx="0" cy="0" r="30" fill="none" stroke="#38BDF8" stroke-width="2"/>
+    <path d="M-15 -5 L-5 -5 L-5 -15" stroke="#38BDF8" stroke-width="2" fill="none"/>
+    <path d="M-5 5 L-15 5 L-15 15" stroke="#38BDF8" stroke-width="2" fill="none"/>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo oscuro -->
+  <rect width="512" height="512" fill="#0F172A" rx="20"/>
+  
+  <!-- Icono central: engranaje + terminal -->
+  <g transform="translate(128, 128)">
+    <!-- Círculo exterior del engranaje -->
+    <circle cx="128" cy="128" r="100" fill="none" stroke="#38BDF8" stroke-width="8"/>
+    <!-- Dientes del engranaje (8 dientes) -->
+    <g stroke="#38BDF8" stroke-width="8">
+      <line x1="128" y1="28" x2="128" y2="8" />
+      <line x1="128" y1="228" x2="128" y2="248" />
+      <line x1="28" y1="128" x2="8" y2="128" />
+      <line x1="228" y1="128" x2="248" y2="128" />
+      <line x1="199" y1="57" x2="213" y2="43" />
+      <line x1="57" y1="199" x2="43" y2="213" />
+      <line x1="199" y1="199" x2="213" y2="213" />
+      <line x1="57" y1="57" x2="43" y2="43" />
+    </g>
+    <!-- Círculo interior -->
+    <circle cx="128" cy="128" r="50" fill="none" stroke="#38BDF8" stroke-width="8"/>
+    <!-- Símbolo de terminal -->
+    <path d="M100 160 L115 144 L100 128" stroke="#38BDF8" stroke-width="8" fill="none" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Texto "AL" (opcional, para versión compacta) -->
+  <!--
+  <text x="256" y="380" text-anchor="middle" font-family="Poppins, sans-serif" font-weight="600" font-size="64" fill="#E2E8F0">AL</text>
+  -->
+</svg>

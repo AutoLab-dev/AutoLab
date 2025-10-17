@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoTok AI — Prototipo Definitivo (Runway)</title>
+  <meta name="description" content="AutoTok AI — planificador CSV, reescritura estilo TikTok, TTS local, generación de vídeo IA real (Runway, vía backend seguro) y subtítulos opcionales. 100% en navegador + serverless." />
+  <style>
+    :root{--bg:#0b0c10;--card:#151821;--ink:#e6e6e6;--muted:#a4a9b6;--brand:#5eead4;--err:#ff5470;--ok:#8bfa9b}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Noto Sans,sans-serif}
+    .container{max-width:1200px;margin:0 auto;padding:22px}
+    h1{margin:0 0 8px;font-size:28px}
+    h2{margin:0 0 8px;font-size:18px;color:var(--muted)}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-top:14px}
+    .grid{display:grid;gap:14px}
+    .grid-2{grid-template-columns:1fr}
+    @media(min-width:1000px){.grid-2{grid-template-columns:1fr 1fr}}
+    input[type="file"],input[type="text"],input[type="number"],input[type="range"],textarea,select{width:100%;padding:10px 12px;background:#0f121a;border:1px solid rgba(255,255,255,.09);border-radius:10px;color:var(--ink)}
+    textarea{min-height:100px;resize:vertical}
+    button{appearance:none;border:none;background:var(--brand);color:#0a0a0a;font-weight:700;padding:10px 14px;border-radius:12px;cursor:pointer}
+    button.secondary{background:#2b2f3a;color:#e9eef6;border:1px solid rgba(255,255,255,.08)}
+    button.danger{background:var(--err);color:white}
+    .muted{color:var(--muted)}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--ok);color:#0b0c10;font-size:12px}
+    .pill.err{background:var(--err);color:#fff}
+    .table{width:100%;border-collapse:collapse;font-size:14px}
+    .table th,.table td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px;text-align:left;vertical-align:top}
+    pre{background:#0f121a;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;overflow:auto;white-space:pre-wrap}
+    .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#111420;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:2px 6px;font-size:12px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    .tab{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#10131b;cursor:pointer}
+    .tab.active{border-color:var(--brand);box-shadow:0 0 0 2px rgba(94,234,212,.2) inset}
+    .hidden{display:none}
+    canvas{background:#0f121a;border:1px solid rgba(255,255,255,.08);border-radius:12px;width:100%}
+    video{width:100%;border-radius:12px;margin-top:8px}
+    label{display:block;margin:8px 0 6px;color:#cfd3dc;font-size:14px}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <h1>AutoTok AI — Prototipo Definitivo</h1>
+        <div class="muted">Plan CSV · Reescritura · TTS · <b>Vídeo IA real</b> (Runway via backend) · Subtítulos · Export</div>
+      </div>
+      <div class="row">
+        <button class="secondary" id="btnTplCsv">Descargar plantilla CSV</button>
+        <button class="danger" id="btnResetAll">Reiniciar todo</button>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-tab="plan">1) Plan CSV</div>
+      <div class="tab" data-tab="rewrite">2) AI Lite</div>
+      <div class="tab" data-tab="tts">3) Voz (TTS)</div>
+      <div class="tab" data-tab="video">4-5-6) Vídeo IA + Subtítulos</div>
+    </div>
+
+    <!-- 1) PLAN CSV -->
+    <section id="tab-plan" class="card">
+      <h2>1) Planificador desde CSV</h2>
+      <div class="grid grid-2">
+        <div>
+          <label>Archivo CSV</label>
+          <input id="csvInput" type="file" accept=".csv" />
+          <details style="margin-top:10px">
+            <summary class="muted">Formato esperado</summary>
+            <pre><code>tema,guion,voz,duracion,hashtags,fecha,hora
+Cómo convertir CSV a JSON gratis,Hoy te enseño una web que hace magia con tus datos.,neutro,20,#AutoLab #Dev,2025-10-20,18:00
+Truco para automatizar Notion,Convierte Notion a CSV en segundos.,femenino,15,#Notion #Automation,2025-10-22,20:30</code></pre>
+          </details>
+          <label>Hashtags por defecto (opcional)</label>
+          <input id="defaultTags" type="text" placeholder="#AutoLab #IA #Productividad" />
+          <div class="row" style="margin-top:10px">
+            <button id="btnParse">Validar y previsualizar</button>
+          </div>
+        </div>
+        <div>
+          <h3>Estado</h3>
+          <div id="planStatus" class="muted">Sin datos aún.</div>
+          <div id="planErrors" class="muted" style="margin-top:6px"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h3>Previsualización</h3>
+        <div id="planPreview" class="muted">Sube un CSV y pulsa <span class="kbd">Validar y previsualizar</span>.</div>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:8px">
+        <div class="muted">Exporta el plan cuando esté todo OK.</div>
+        <div class="row">
+          <button class="secondary" id="btnExportPlan" disabled>Exportar plan (JSON)</button>
+          <button id="btnCopyPlan" disabled>Copiar plan</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:10px"><h3>Plan (JSON)</h3><pre id="planOut">—</pre></div>
+    </section>
+
+    <!-- 2) AI LITE -->
+    <section id="tab-rewrite" class="card hidden">
+      <h2>2) Reescritura estilo TikTok (AI Lite, sin APIs)</h2>
+      <label>Guion original</label>
+      <textarea id="txtOriginal" placeholder="Pega aquí tu guion..."></textarea>
+      <button id="btnRewrite">✨ Pulir guion</button>
+      <div class="grid grid-2">
+        <div>
+          <h3>Original</h3>
+          <pre id="outOriginal">—</pre>
+        </div>
+        <div>
+          <h3>Reescrito</h3>
+          <pre id="outRew">—</pre>
+        </div>
+      </div>
+      <p class="muted">Reglas: máx. ~120 caracteres, emojis contextuales, frases cortas, gancho final (ej. “👇 Pruébalo ahora”).</p>
+    </section>
+
+    <!-- 3) TTS -->
+    <section id="tab-tts" class="card hidden">
+      <h2>3) Voz generada (TTS local)</h2>
+      <label>Texto a locutar</label>
+      <textarea id="ttsText" placeholder="Usa el guion reescrito o escribe el tuyo."></textarea>
+      <div class="grid grid-2">
+        <div>
+          <label>Voz</label>
+          <select id="ttsVoice"></select>
+        </div>
+        <div class="row" style="gap:18px">
+          <div style="flex:1">
+            <label>Velocidad</label>
+            <input type="range" id="ttsRate" min="0.5" max="2" step="0.1" value="1" />
+          </div>
+          <div style="flex:1">
+            <label>Tono</label>
+            <input type="range" id="ttsPitch" min="0.5" max="2" step="0.1" value="1" />
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button id="btnSpeak">🎙️ Reproducir</button>
+        <button class="danger" id="btnStop">⏹️ Detener</button>
+      </div>
+      <p class="muted">Nota: el TTS del navegador no puede capturarse como audio programáticamente por seguridad. Para el vídeo final puedes subir una pista de audio opcional o exportar el clip sin audio.</p>
+    </section>
+
+    <!-- 4-5-6) VÍDEO IA (Runway) + SUBTÍTULOS -->
+    <section id="tab-video" class="card hidden">
+      <h2>4-5-6) Generador de vídeo IA (Runway) + Subtítulos</h2>
+      <div class="grid grid-2">
+        <div>
+          <label>Describe tu escena</label>
+          <input id="sceneText" type="text" placeholder="Ej: Mono saltando de un árbol, realista, plano general, luz natural" />
+          <div class="row" style="margin-top:8px">
+            <div style="flex:1">
+              <label>Duración (s)</label>
+              <input id="runwayDuration" type="number" min="2" max="10" value="5" />
+            </div>
+            <div style="flex:1">
+              <label>Relación de aspecto</label>
+              <select id="runwayAspect">
+                <option value="9:16" selected>9:16 (vertical TikTok)</option>
+                <option value="1:1">1:1 (cuadrado)</option>
+                <option value="16:9">16:9 (horizontal)</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button id="btnGenRunway">🎬 Generar vídeo IA</button>
+          </div>
+          <div id="runwayStatus" class="muted" style="margin-top:6px">—</div>
+
+          <div class="card" style="margin-top:12px">
+            <h3>Opciones de salida</h3>
+            <div class="row">
+              <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="toggleSubs"/> Subtítulos desde texto</label>
+            </div>
+            <label style="margin-top:8px">Texto para subtítulos (si activado)</label>
+            <textarea id="subsText" placeholder="Se usará el guion reescrito o escribe aquí"></textarea>
+            <label style="margin-top:8px">Audio opcional (MP3/WAV) para mezclar</label>
+            <input id="audioFile" type="file" accept="audio/*" />
+          </div>
+        </div>
+        <div>
+          <h3>Vista previa del vídeo IA</h3>
+          <video id="iaVideo" controls style="width:100%;border-radius:12px"></video>
+
+          <h3 style="margin-top:12px">Exportar con subtítulos / audio</h3>
+          <canvas id="vidCanvas" width="1080" height="1920"></canvas>
+          <div class="row" style="margin-top:8px">
+            <button id="btnPreview">▶️ Previsualizar</button>
+            <button id="btnRecord">⏺️ Grabar .webm</button>
+            <button class="secondary" id="btnStopPreview">⏹️ Parar</button>
+          </div>
+          <video id="outVideo" controls></video>
+          <div id="videoNote" class="muted" style="margin-top:6px">El flujo usa <b>Runway API</b> vía un endpoint seguro en tu backend (Vercel). El canvas sirve para superponer subtítulos/mezclar audio y exportar.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ====== Navegación de pestañas ======
+    const tabs = document.querySelectorAll('.tab');
+    const sections = { plan:document.getElementById('tab-plan'), rewrite:document.getElementById('tab-rewrite'), tts:document.getElementById('tab-tts'), video:document.getElementById('tab-video') };
+    tabs.forEach(t=>t.addEventListener('click',()=>{ tabs.forEach(x=>x.classList.remove('active')); t.classList.add('active'); const key=t.dataset.tab; Object.entries(sections).forEach(([k,el])=> el.classList.toggle('hidden', k!==key)); }));
+
+    // ====== Utilidades ======
+    const esc = s=> String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+    function download(filename, content, mime='application/octet-stream'){ const blob=new Blob([content],{type:mime}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url); }
+
+    // ====== 1) PLAN CSV ======
+    const csvInput=document.getElementById('csvInput'); const defaultTags=document.getElementById('defaultTags'); const btnParse=document.getElementById('btnParse'); const planStatus=document.getElementById('planStatus'); const planErrors=document.getElementById('planErrors'); const planPreview=document.getElementById('planPreview'); const btnExportPlan=document.getElementById('btnExportPlan'); const btnCopyPlan=document.getElementById('btnCopyPlan'); const planOut=document.getElementById('planOut'); const REQUIRED=['tema','guion']; const OPTIONAL=['voz','duracion','hashtags','fecha','hora']; let planRows=[];
+    function normHeader(h){return String(h||'').trim().toLowerCase().replace(/\s+/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9_]/g,'');}
+    function headerMap(headers){const m={}; headers.forEach((h,i)=> m[normHeader(h)]=i); return m;}
+    btnParse.addEventListener('click',()=>{ planErrors.innerHTML=''; if(!csvInput.files.length){ planErrors.innerHTML='<span class="pill err">Sube un archivo CSV.</span>'; return; } Papa.parse(csvInput.files[0], { complete:(res)=>{ const rows=res.data?.filter(r=> r&&r.length&&r.some(c=> String(c).trim()!==''))||[]; const [headers,...vals]=rows; if(!headers){ planErrors.innerHTML='<span class="pill err">CSV sin cabecera.</span>'; return; } const map=headerMap(headers); const errs=[]; const valid=[]; if(!REQUIRED.every(c=> c in map)){ errs.push('Faltan columnas obligatorias: '+REQUIRED.filter(c=> !(c in map)).join(', ')); } vals.forEach((r,i)=>{ const obj={}; REQUIRED.forEach(c=> obj[c]= String(r[map[c]]||'').trim()); OPTIONAL.forEach(c=> obj[c]= String(r[map[c]]||'').trim()); if(!obj.tema && !obj.guion) return; if(!obj.guion) errs.push(`Fila ${i+2}: falta guion`); if(obj.fecha && !/^\d{4}-\d{2}-\d{2}$/.test(obj.fecha)) errs.push(`Fila ${i+2}: fecha inválida`); if(obj.hora && !/^\d{2}:\d{2}$/.test(obj.hora)) errs.push(`Fila ${i+2}: hora inválida`); if(!obj.hashtags && defaultTags.value.trim()) obj.hashtags=defaultTags.value.trim(); valid.push(obj); }); planRows=valid; planStatus.innerHTML = errs.length? '<span class="pill err">Con errores</span>': '<span class="pill">Todo OK</span>'; if(errs.length){ planErrors.innerHTML='<ul style="margin:6px 0 0 18px">'+errs.map(e=>`<li>${esc(e)}</li>`).join('')+'</ul>'; } if(valid.length){ const rowsHtml=valid.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.tema||'')}</td><td>${esc(r.guion||'')}</td><td>${esc(r.voz||'')}</td><td>${esc(r.duracion||'')}</td><td>${esc(r.hashtags||'')}</td><td>${esc(r.fecha||'')}</td><td>${esc(r.hora||'')}</td></tr>`).join(''); planPreview.innerHTML=`<table class="table"><thead><tr><th>#</th><th>Tema</th><th>Guion</th><th>Voz</th><th>Duración</th><th>Hashtags</th><th>Fecha</th><th>Hora</th></tr></thead><tbody>${rowsHtml}</tbody></table>`; const plan={version:'autotok.v1',generado_en:new Date().toISOString(),items: valid.map((r,idx)=>({id:idx+1,tema:r.tema||'',guion:r.guion||'',voz:r.voz||'neutro',duracion_seg:Number(r.duracion||15),hashtags:r.hashtags||'',fecha:r.fecha||'',hora:r.hora||'',datetime_iso:(r.fecha&&r.hora)? new Date(`${r.fecha}T${r.hora}:00`).toISOString():null}))}; planOut.textContent=JSON.stringify(plan,null,2); btnExportPlan.disabled=false; btnCopyPlan.disabled=false; } else { planPreview.innerHTML='—'; planOut.textContent='—'; btnExportPlan.disabled=true; btnCopyPlan.disabled=true; } }, error:()=> planErrors.innerHTML='<span class="pill err">Error leyendo el CSV.</span>', skipEmptyLines:true }); });
+    document.getElementById('btnTplCsv').addEventListener('click',()=>{ const tpl=`tema,guion,voz,duracion,hashtags,fecha,hora\nCómo convertir CSV a JSON gratis,Hoy te enseño una web que hace magia con tus datos.,neutro,20,#AutoLab #Dev,2025-10-20,18:00\nTruco para automatizar Notion,Convierte Notion a CSV en segundos.,femenino,15,#Notion #Automation,2025-10-22,20:30`; download('autotok_template.csv',tpl,'text/csv;charset=utf-8'); });
+    document.getElementById('btnResetAll').addEventListener('click',()=> location.reload());
+    document.getElementById('btnExportPlan').addEventListener('click',()=> download('autotok_plan.json', planOut.textContent,'application/json;charset=utf-8'));
+    document.getElementById('btnCopyPlan').addEventListener('click',async()=>{ await navigator.clipboard.writeText(planOut.textContent); alert('Plan copiado'); });
+
+    // ====== 2) AI LITE ======
+    function addHook(text){ const hooks=['👇 Pruébalo ahora','⚡ En segundos','🔥 Esto te va a servir','💡 Lo vas a querer usar','🎬 Guarda esto para después']; const pick=hooks[Math.floor(Math.random()*hooks.length)]; return text.endsWith('.')? text+' '+pick : text+'. '+pick; }
+    function simplify(text){ return text.replace(/\b(hoy|te enseño|te muestro|vas a ver)\b/gi,'Descubre').replace(/web/gi,'herramienta').replace(/gratu(it[oa])/gi,'gratis').replace(/muy /gi,'').replace(/segura y rápida/gi,'rápida ⚡').replace(/[,;:]/g,'.').replace(/\s+/g,' ').trim(); }
+    function addEmojis(text){ const dict={csv:'📊',json:'💾',datos:'📈',automatizar:'🤖',herramienta:'🔧',ia:'🧠',video:'🎬',web:'🌐',truco:'💡'}; for(const[k,v] of Object.entries(dict)){ text=text.replace(new RegExp(`\\b${k}\\b`,'gi'), k+' '+v); } return text; }
+    function tiktokRewrite(t){ if(!t) return ''; let out=simplify(t); out=addEmojis(out); if(out.length>120) out=out.slice(0,117)+'...'; return addHook(out);}    
+    const txtOriginal=document.getElementById('txtOriginal'); const outOriginal=document.getElementById('outOriginal'); const outRew=document.getElementById('outRew'); document.getElementById('btnRewrite').addEventListener('click',()=>{ if(!txtOriginal.value.trim()) return alert('Escribe un guion.'); const rw=tiktokRewrite(txtOriginal.value.trim()); outOriginal.textContent=txtOriginal.value.trim(); outRew.textContent=rw; document.getElementById('ttsText').value=rw; document.getElementById('subsText').value=rw; });
+
+    // ====== 3) TTS ======
+    const synth=window.speechSynthesis; const ttsText=document.getElementById('ttsText'); const ttsVoice=document.getElementById('ttsVoice'); const ttsRate=document.getElementById('ttsRate'); const ttsPitch=document.getElementById('ttsPitch'); let voices=[]; function loadVoices(){ voices=synth.getVoices(); ttsVoice.innerHTML=voices.map(v=>`<option value="${v.name}">${v.name} (${v.lang})</option>`).join(''); } loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; document.getElementById('btnSpeak').addEventListener('click',()=>{ if(synth.speaking) synth.cancel(); const u=new SpeechSynthesisUtterance(ttsText.value.trim()); const v=voices.find(x=>x.name===ttsVoice.value); if(v) u.voice=v; u.rate=parseFloat(ttsRate.value); u.pitch=parseFloat(ttsPitch.value); synth.speak(u); }); document.getElementById('btnStop').addEventListener('click',()=> synth.cancel());
+
+    // ====== 4-5-6) VÍDEO IA (Runway) + Subtítulos ======
+    const sceneText=document.getElementById('sceneText'); const runwayDuration=document.getElementById('runwayDuration'); const runwayAspect=document.getElementById('runwayAspect'); const btnGenRunway=document.getElementById('btnGenRunway'); const runwayStatus=document.getElementById('runwayStatus'); const toggleSubs=document.getElementById('toggleSubs'); const subsText=document.getElementById('subsText'); const audioFile=document.getElementById('audioFile'); const iaVideo=document.getElementById('iaVideo'); const vidCanvas=document.getElementById('vidCanvas'); const vctx=vidCanvas.getContext('2d'); const btnPreview=document.getElementById('btnPreview'); const btnStopPreview=document.getElementById('btnStopPreview'); const btnRecord=document.getElementById('btnRecord'); const outVideo=document.getElementById('outVideo');
+
+    let previewRAF=null; let previewRunning=false;
+
+    btnGenRunway.addEventListener('click', async()=>{
+      runwayStatus.textContent='Generando vídeo IA...';
+      const body={ prompt:(sceneText.value||'').trim(), duration: Math.max(2,Math.min(10, Number(runwayDuration.value||5))), aspect_ratio: runwayAspect.value||'9:16' };
+      if(!body.prompt){ runwayStatus.textContent='Escribe una descripción.'; return; }
+      try{
+        const res = await fetch('/api/runway-generate', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+        const json = await res.json();
+        if(!res.ok){ runwayStatus.textContent = 'Error: '+(json?.error||'No se pudo generar'); return; }
+        runwayStatus.innerHTML = '<span class="pill">Vídeo listo</span>';
+        iaVideo.src = json.videoUrl; iaVideo.load(); iaVideo.play();
+      }catch(e){ runwayStatus.textContent='Error de red al generar vídeo'; }
+    });
+
+    function drawFrameFromVideo(){ const video=iaVideo; if(!video||!video.videoWidth) return; const scale=Math.max(vidCanvas.width/video.videoWidth, vidCanvas.height/video.videoHeight); const w=video.videoWidth*scale, h=video.videoHeight*scale; const x=(vidCanvas.width-w)/2, y=(vidCanvas.height-h)/2; vctx.drawImage(video,x,y,w,h); if(toggleSubs.checked){ const text=(subsText.value.trim()||ttsText.value.trim()||outRew.textContent.trim()).slice(0,220); vctx.font='bold 56px system-ui,Segoe UI,Roboto'; vctx.textAlign='center'; const lines=wrapTextCtx(vctx,text,vidCanvas.width*0.8); const padding=24, lineH=64, boxH=lines.length*lineH+padding*2; const bx=vidCanvas.width/2, by=vidCanvas.height-boxH-80; vctx.fillStyle='rgba(10,10,10,0.45)'; roundRect(vctx, vidCanvas.width*0.1, by-20, vidCanvas.width*0.8, boxH+20, 24, true, false); vctx.fillStyle='#fff'; vctx.strokeStyle='rgba(0,0,0,.6)'; vctx.lineWidth=8; lines.forEach((ln,i)=>{ const yy=by+padding+i*lineH; vctx.strokeText(ln,bx,yy); vctx.fillText(ln,bx,yy); }); } }
+    function wrapTextCtx(ctx,text,maxW){ const words=text.split(/\s+/); const lines=[]; let line=''; for(let i=0;i<words.length;i++){ const test=(line?line+' ':'')+words[i]; if(ctx.measureText(test).width>maxW){ lines.push(line); line=words[i]; } else { line=test; } } if(line) lines.push(line); return lines; }
+    function roundRect(ctx,x,y,w,h,r,fill,stroke){ if(typeof r==='number'){ r={tl:r,tr:r,br:r,bl:r}; } ctx.beginPath(); ctx.moveTo(x+r.tl,y); ctx.lineTo(x+w-r.tr,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr); ctx.lineTo(x+w,y+h-r.br); ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h); ctx.lineTo(x+r.bl,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl); ctx.lineTo(x,y+r.tl); ctx.quadraticCurveTo(x,y,x+r.tl,y); ctx.closePath(); if(fill) ctx.fill(); if(stroke) ctx.stroke(); }
+
+    function startPreview(){ if(!iaVideo.src){ alert('Primero genera un vídeo IA'); return; } previewRunning=true; iaVideo.currentTime=0; iaVideo.play(); (function loop(){ if(!previewRunning) return; drawFrameFromVideo(); previewRAF=requestAnimationFrame(loop); })(); }
+    function stopPreview(){ previewRunning=false; if(previewRAF) cancelAnimationFrame(previewRAF); iaVideo.pause(); }
+    btnPreview.addEventListener('click', startPreview); btnStopPreview.addEventListener('click', stopPreview);
+
+    btnRecord.addEventListener('click', async()=>{
+      if(!iaVideo.src){ return alert('Genera un vídeo IA primero'); }
+      const fps=30; const canvasStream=vidCanvas.captureStream(fps); let mixedStream=canvasStream; const file=audioFile.files?.[0]; if(file){ const audioEl=new Audio(URL.createObjectURL(file)); audioEl.crossOrigin='anonymous'; const ctxA=new (window.AudioContext||window.webkitAudioContext)(); const src=ctxA.createMediaElementSource(audioEl); const dest=ctxA.createMediaStreamDestination(); src.connect(dest); src.connect(ctxA.destination); const track=dest.stream.getAudioTracks()[0]; mixedStream=new MediaStream([...canvasStream.getVideoTracks(), track]); audioEl.play(); }
+      const rec=new MediaRecorder(mixedStream,{mimeType:'video/webm;codecs=vp9'}); const chunks=[]; rec.ondataavailable=e=>chunks.push(e.data); rec.onstop=()=>{ const blob=new Blob(chunks,{type:'video/webm'}); const url=URL.createObjectURL(blob); outVideo.src=url; const a=document.createElement('a'); a.href=url; a.download='autotok_video.webm'; a.click(); };
+      iaVideo.currentTime=0; iaVideo.play(); rec.start(); (function loop(){ drawFrameFromVideo(); if(iaVideo.ended){ rec.stop(); } else { requestAnimationFrame(loop); } })();
+    });
+  </script>
+
+  <!-- ===== BACKEND: crea este archivo en tu repo =====
+       Ruta: /api/runway-generate.js (Vercel serverless)
+       Variables de entorno: RUNWAY_API_KEY -->
+  <!--
+  // /api/runway-generate.js
+  export default async function handler(req, res){
+    if(req.method !== 'POST') return res.status(405).json({error:'Method not allowed'});
+    const { prompt, duration = 5, aspect_ratio = '9:16' } = req.body || {};
+    if(!prompt) return res.status(400).json({error:'Missing prompt'});
+    try{
+      const create = await fetch('https://api.runwayml.com/v1/tasks', {
+        method:'POST',
+        headers:{
+          'Authorization': `Bearer ${process.env.RUNWAY_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gen-3', // Ajusta si tu cuenta usa otro modelo (p.ej. 'gen-3.5')
+          input: { prompt, duration, aspect_ratio }
+        })
+      });
+      const task = await create.json();
+      if(!create.ok){ return res.status(create.status).json({error: task?.message || 'Runway create error'}); }
+      const id = task.id;
+      const started = Date.now();
+      while(true){
+        const st = await fetch(`https://api.runwayml.com/v1/tasks/${id}`, { headers:{ 'Authorization': `Bearer ${process.env.RUNWAY_API_KEY}` } });
+        const data = await st.json();
+        if(data.status?.toUpperCase?.() === 'SUCCEEDED'){
+          const url = (data.output?.[0]?.url_signed) || (data.output?.[0]?.url) || null;
+          return res.status(200).json({ videoUrl: url, raw: data });
+        }
+        if(data.status?.toUpperCase?.() === 'FAILED'){
+          return res.status(500).json({error:'Runway task failed', raw: data});
+        }
+        if(Date.now() - started > 120000){ // 120s timeout
+          return res.status(504).json({error:'Runway timeout', raw: data});
+        }
+        await new Promise(r=> setTimeout(r, 3000));
+      }
+    }catch(err){
+      return res.status(500).json({error:'Server error', detail: String(err)});
+    }
+  }
+  -->
+</body>
+</html>

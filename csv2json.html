@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSV2JSON | AutoLab</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0F172A;
+      color: #E2E8F0;
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { color: #38BDF8; text-align: center; }
+    .input-group { margin: 20px 0; }
+    textarea {
+      width: 100%;
+      height: 200px;
+      background: #1E293B;
+      color: #E2E8F0;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: monospace;
+    }
+    button {
+      background: #38BDF8;
+      color: #0F172A;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { opacity: 0.9; }
+    .result { margin-top: 20px; }
+    a { color: #38BDF8; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>CSV2JSON</h1>
+  <p>Convierte archivos CSV a JSON directamente en tu navegador. <strong>Sin subir archivos a servidores</strong>.</p>
+
+  <div class="input-group">
+    <input type="file" id="csvFile" accept=".csv" />
+    <p>O pega tu CSV aquí:</p>
+    <textarea id="csvInput" placeholder="nombre,edad&#10;Juan,30&#10;María,25"></textarea>
+  </div>
+
+  <button onclick="convert()">Convertir a JSON</button>
+  <button onclick="downloadJSON()">Descargar JSON</button>
+
+  <div class="result">
+    <h3>Resultado:</h3>
+    <textarea id="jsonOutput" readonly></textarea>
+  </div>
+
+  <p><a href="index.html">&larr; Volver a AutoLab</a></p>
+
+  <script>
+    function csvToJSON(csv) {
+      const lines = csv.trim().split('\n');
+      const headers = lines[0].split(',').map(h => h.trim());
+      const result = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const obj = {};
+        const currentLine = lines[i].split(',');
+        for (let j = 0; j < headers.length; j++) {
+          obj[headers[j]] = currentLine[j] ? currentLine[j].trim() : '';
+        }
+        result.push(obj);
+      }
+      return JSON.stringify(result, null, 2);
+    }
+
+    function convert() {
+      const fileInput = document.getElementById('csvFile');
+      const csvInput = document.getElementById('csvInput').value;
+      const output = document.getElementById('jsonOutput');
+
+      if (fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          output.value = csvToJSON(e.target.result);
+        };
+        reader.readAsText(fileInput.files[0]);
+      } else if (csvInput) {
+        output.value = csvToJSON(csvInput);
+      } else {
+        output.value = 'Por favor, sube un archivo o escribe CSV.';
+      }
+    }
+
+    function downloadJSON() {
+      const json = document.getElementById('jsonOutput').value;
+      if (!json || json.includes('Por favor')) return;
+
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'resultado.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

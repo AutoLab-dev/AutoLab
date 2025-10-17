@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Sobre AutoLab: Filosofía, visión y futuro de nuestro laboratorio de automatización y microproductos digitales.">
+  <title>Sobre Nosotros | AutoLab</title>
+
+  <!-- Fuente y estilos -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Favicon corregido -->
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/7/73/Flat_tick_icon.svg">
+</head>
+
+<body>
+  <header>
+    <h1>AutoLab</h1>
+    <div class="menu-toggle" id="menu-toggle">☰</div>
+    <nav id="nav-menu">
+      <a href="index.html#inicio">Inicio</a>
+      <a href="productos.html">Productos</a>
+      <a href="automatizaciones.html">Automatizaciones</a>
+      <a href="about.html" class="active">Sobre</a>
+      <a href="index.html#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <!-- === HERO === -->
+  <section class="hero scroll-reveal">
+    <h2>Innovación impulsada por la automatización</h2>
+    <p>AutoLab nació con una idea sencilla: convertir la automatización en algo accesible, estético y eficiente.<br>
+    Creemos en construir herramientas que trabajen por las personas, no al revés.</p>
+  </section>
+
+  <!-- === FILOSOFÍA === -->
+  <section class="scroll-reveal destacados">
+    <h2>Nuestra filosofía</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Menos ruido, más valor</h3>
+        <p>Diseñamos soluciones que eliminan la complejidad innecesaria.<br>
+        Cada línea de código tiene un propósito real y medible.</p>
+      </div>
+
+      <div class="card">
+        <h3>Automatizar con sentido</h3>
+        <p>No se trata de automatizar todo, sino de automatizar lo correcto.<br>
+        Optimizamos procesos que realmente ahorran tiempo y esfuerzo.</p>
+      </div>
+
+      <div class="card">
+        <h3>Escalar sin límites</h3>
+        <p>Desarrollamos microproductos que crecen solos.<br>
+        Una vez creados, generan valor constante de forma autónoma.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- === VISIÓN === -->
+  <section class="scroll-reveal destacados">
+    <h2>Visión y futuro</h2>
+    <p>AutoLab no es solo una web, es un ecosistema de desarrollo y automatización.<br>
+    Nuestro objetivo es construir una red de productos conectados, donde cada uno se complemente con los demás.</p>
+
+    <div class="cards">
+      <div class="card">
+        <h3>🚀 Expansión técnica</h3>
+        <p>Integración con IA, APIs y plataformas como n8n o Make para conectar cualquier flujo digital.</p>
+      </div>
+      <div class="card">
+        <h3>🌍 Comunidad abierta</h3>
+        <p>Queremos abrir parte de nuestras herramientas para que otros desarrolladores puedan mejorarlas y adaptarlas.</p>
+      </div>
+      <div class="card">
+        <h3>💡 Laboratorio permanente</h3>
+        <p>AutoLab funciona como un espacio de experimentación: cada semana se prototipan nuevas ideas, scripts y automatizaciones.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- === CONTACTO === -->
+  <section class="scroll-reveal destacados">
+    <h2>Hablemos</h2>
+    <p>¿Te gustaría colaborar, proponer una idea o participar en un desarrollo?</p>
+    <p>📧 contacto@autolab.dev</p>
+    <div class="redes">
+      <!-- ¡REEMPLAZA CON TUS ENLACES REALES! -->
+      <a href="https://github.com/AutoLab-dev" target="_blank">GitHub</a> |
+      <a href="https://linkedin.com/in/tu-perfil" target="_blank">LinkedIn</a> |
+      <a href="https://twitter.com/tu-usuario" target="_blank">Twitter/X</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 AutoLab — Innovación y Automatización.</p>
+  </footer>
+
+  <!-- === SCRIPTS === -->
+  <script>
+    const toggle = document.getElementById('menu-toggle');
+    const nav = document.getElementById('nav-menu');
+    const links = nav.querySelectorAll('a');
+
+    toggle.addEventListener('click', () => {
+      nav.classList.toggle('active');
+    });
+
+    // Cerrar menú al hacer clic en un enlace
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('active');
+      });
+    });
+  </script>
+
+  <script>
+    const reveals = document.querySelectorAll('.scroll-reveal');
+    const revealOnScroll = () => {
+      const trigger = window.innerHeight * 0.85;
+      reveals.forEach(el => {
+        if (el.getBoundingClientRect().top < trigger) el.classList.add('visible');
+      });
+    };
+    window.addEventListener('scroll', revealOnScroll);
+    revealOnScroll();
+  </script>
+</body>
+</html>
