@@ -12,7 +12,7 @@
     <!-- Conexión con estilos -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- Favicon corregido (sin espacios) -->
+    <!-- Favicon -->
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/7/73/Flat_tick_icon.svg">
 </head>
 
@@ -29,7 +29,19 @@
         </nav>
     </header>
 
-    <!-- === INICIO / HERO === -->
+    <!-- === TARJETA PROMOCIONAL AL ENTRAR === -->
+    <section class="servicio-web scroll-reveal">
+        <div class="web-card">
+            <h2>🚀 Creamos tu web por solo 10 €</h2>
+            <p>
+                ¿Necesitas una web moderna y lista en <strong>48 h</strong>? En <strong>AutoLab</strong> te la creamos por solo 10 €. 
+                Perfecta para portfolios, pequeños negocios o proyectos personales.
+            </p>
+            <a href="mailto:autolab.web.dev@gmail.com?subject=Quiero%20mi%20web%20por%2010€" class="btn-web">Encargar ahora</a>
+        </div>
+    </section>
+
+    <!-- === HERO === -->
     <section id="inicio" class="hero scroll-reveal">
         <h2>Innovación en cada línea de código.</h2>
         <p>En AutoLab desarrollamos microproductos digitales y automatizaciones diseñadas para optimizar tiempo, procesos y resultados.</p>
@@ -42,9 +54,7 @@
     <section id="productos" class="scroll-reveal destacados">
         <h2>Microactivos Digitales</h2>
         <p>Scripts, herramientas y plantillas listas para usar. Pequeños productos, grandes resultados.</p>
-        <div class="cards" id="catalogo">
-            <!-- Las tarjetas se generarán aquí con JavaScript -->
-        </div>
+        <div class="cards" id="catalogo"></div>
         <p><i>Más productos próximamente.</i></p>
     </section>
 
@@ -55,103 +65,47 @@
         <p><i>Sección en desarrollo.</i></p>
     </section>
 
-   <!-- === CONTACTO === -->
-<section id="contacto" class="scroll-reveal">
-  <h2>Contacto</h2>
-  <p>¿Tienes una idea, quieres probar una herramienta o colaborar con AutoLab?</p>
+    <!-- === CONTACTO === -->
+    <section id="contacto" class="scroll-reveal">
+        <h2>Contacto</h2>
+        <p>¿Tienes una idea, quieres probar una herramienta o colaborar con AutoLab?</p>
 
-  <!-- Formulario centrado -->
-  <div style="display: flex; justify-content: center; width: 100%; margin: 20px 0;">
-    <form 
-      action="https://formspree.io/f/xkgqybqj" 
-      method="POST"
-      style="max-width: 600px; width: 100%;"
-    >
-      <div style="margin-bottom: 15px;">
-        <label for="email" style="display: block; margin-bottom: 6px; font-weight: 600; color: #E2E8F0;">Email</label>
-        <input 
-          type="email" 
-          name="email" 
-          id="email"
-          placeholder="tu@email.com"
-          required
-          style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #1E293B; color: #E2E8F0; font-family: 'Inter', sans-serif;"
-        >
-      </div>
-      <div style="margin-bottom: 15px;">
-        <label for="message" style="display: block; margin-bottom: 6px; font-weight: 600; color: #E2E8F0;">Mensaje</label>
-        <textarea 
-          name="message" 
-          id="message"
-          rows="4"
-          placeholder="Cuéntame tu idea, sugerencia o duda..."
-          required
-          style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #1E293B; color: #E2E8F0; font-family: 'Inter', sans-serif;"
-        ></textarea>
-      </div>
-      <button 
-        type="submit"
-        class="boton"
-        style="background: #38BDF8; color: #0F172A; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%;"
-      >
-        Enviar mensaje
-      </button>
-    </form>
-  </div>
+        <div style="display: flex; justify-content: center; width: 100%; margin: 20px 0;">
+            <form action="https://formspree.io/f/xkgqybqj" method="POST" style="max-width: 600px; width: 100%;">
+                <div style="margin-bottom: 15px;">
+                    <label for="email" style="display: block; margin-bottom: 6px; font-weight: 600; color: #E2E8F0;">Email</label>
+                    <input type="email" name="email" id="email" placeholder="tu@email.com" required
+                        style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #1E293B; color: #E2E8F0;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="message" style="display: block; margin-bottom: 6px; font-weight: 600; color: #E2E8F0;">Mensaje</label>
+                    <textarea name="message" id="message" rows="4" placeholder="Cuéntame tu idea o duda..." required
+                        style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #1E293B; color: #E2E8F0;"></textarea>
+                </div>
+                <button type="submit" class="boton"
+                    style="background: #38BDF8; color: #0F172A; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%;">
+                    Enviar mensaje
+                </button>
+            </form>
+        </div>
 
-  <!-- Email directo -->
-  <p style="text-align: center; margin-top: 25px; font-size: 0.9em; color: #94a3b8;">
-    ¿Prefieres por email? Escríbeme a: 
-    <a href="mailto: autolab.web.dev@gmail.com" style="color: #38BDF8;">contacto@autolab.dev</a>
-  </p>
+        <p style="text-align: center; margin-top: 25px; font-size: 0.9em; color: #94a3b8;">
+            ¿Prefieres por email? Escríbeme a:
+            <a href="mailto:autolab.web.dev@gmail.com" style="color: #38BDF8;">autolab.web.dev@gmail.com</a>
+        </p>
 
-  <div class="redes" style="text-align: center; margin-top: 20px;">
-    <a href="https://github.com/AutoLab-dev" target="_blank">GitHub</a>
-  </div>
-</section>
-  <!-- Opción alternativa: email directo -->
-  <p style="margin-top: 25px; font-size: 0.9em; color: #94a3b8;">
-    ¿Prefieres por email? Escríbeme a: 
-    <a href="mailto:autolab.web.dev@gmail.com" style="color: #38BDF8;">contacto@autolab.dev</a>
-  </p>
-
-  <div class="redes" style="margin-top: 20px;">
-    <a href="https://github.com/AutoLab-dev" target="_blank">GitHub</a>
-  </div>
-</section>
+        <div class="redes" style="text-align: center; margin-top: 20px;">
+            <a href="https://github.com/AutoLab-dev" target="_blank">GitHub</a>
+        </div>
+    </section>
 
     <!-- === SCRIPTS === -->
     <script>
-        // Datos de microactivos
         const microactivos = [
-            {
-                nombre: "CSV2JSON",
-                descripcion: "Convierte tus archivos <strong>CSV</strong> en <strong>JSON</strong> al instante.<br>Usa la versión web (sin Python) o descarga el script en Python.",
-                tipo: "🔥 Nuevo",
-                url: "csv2json.html",
-                destacado: true
-            },
-            {
-                nombre: "Notion2CSV",
-                descripcion: "Exporta cualquier base de datos de Notion a formato CSV directamente desde tu navegador.<br>Sin servidores, sin subir datos: todo en tu máquina.",
-                tipo: "🔥 Nuevo",
-                url: "notion2csv.html", // Asegúrate de que este archivo exista
-                destacado: true
-            },
-            {
-                nombre: "Script de automatización",
-                descripcion: "Ejecuta tareas repetitivas en segundos. Perfecto para creadores y analistas.",
-                tipo: "microactivo digital",
-                url: "#",
-                destacado: false
-            },
-            {
-                nombre: "Plantilla IA",
-                descripcion: "Diseños inteligentes listos para ChatGPT, Notion o Excel con IA.",
-                tipo: "microactivo digital",
-                url: "#",
-                destacado: false
-            }
+            { nombre: "CSV2JSON", descripcion: "Convierte tus archivos <strong>CSV</strong> en <strong>JSON</strong> al instante.<br>Usa la versión web (sin Python) o descarga el script en Python.", tipo: "🔥 Nuevo", url: "csv2json.html", destacado: true },
+            { nombre: "Notion2CSV", descripcion: "Exporta cualquier base de datos de Notion a formato CSV directamente desde tu navegador.<br>Sin servidores, sin subir datos: todo en tu máquina.", tipo: "🔥 Nuevo", url: "notion2csv.html", destacado: true },
+            { nombre: "Script de automatización", descripcion: "Ejecuta tareas repetitivas en segundos. Perfecto para creadores y analistas.", tipo: "microactivo digital", url: "#", destacado: false },
+            { nombre: "Plantilla IA", descripcion: "Diseños inteligentes listos para ChatGPT, Notion o Excel con IA.", tipo: "microactivo digital", url: "#", destacado: false }
         ];
 
         function renderMicroactivos() {
@@ -168,22 +122,13 @@
 
         document.addEventListener('DOMContentLoaded', renderMicroactivos);
 
-        // Menú hamburguesa
         const toggle = document.getElementById('menu-toggle');
         const nav = document.getElementById('nav-menu');
         const links = nav.querySelectorAll('a');
 
-        toggle.addEventListener('click', () => {
-            nav.classList.toggle('active');
-        });
+        toggle.addEventListener('click', () => nav.classList.toggle('active'));
+        links.forEach(link => link.addEventListener('click', () => nav.classList.remove('active')));
 
-        links.forEach(link => {
-            link.addEventListener('click', () => {
-                nav.classList.remove('active');
-            });
-        });
-
-        // Scroll reveal
         const reveals = document.querySelectorAll('.scroll-reveal');
         const revealOnScroll = () => {
             const trigger = window.innerHeight * 0.85;
